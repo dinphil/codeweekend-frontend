@@ -13,14 +13,17 @@ var postMessage = function (color, contents) {
 };
 
 $(function() {
-  $('#message-form').submit(function (event) {
-    event.preventDefault();
-    sendMessage($('#message').val());
-    $('#message').val('');
-  });
-
   postMessage = function(color, contents) {
     $('#messages').append('<li><span style="color: ' + color + '">' + 
                           contents + '</span></li>');
   };
+
+  $('#message-form').submit(function (event) {
+    event.preventDefault();
+    sendMessage($('#message').val()); // server messaging
+    
+    //client side messaging only
+    //postMessage('black', formatMessage('Me', $('#message').val()));
+    $('#message').val('');
+  });
 });
