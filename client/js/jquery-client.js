@@ -1,0 +1,26 @@
+var infoColor = '#888888';
+var errorColor = 'red';
+var messageColor = '#000000';
+var nameColor = 'blue';
+
+var formatMessage = function(user, message) {
+  return '<span style="color: ' + nameColor + '">' + user + '</span>' +
+    ': ' + message;
+};
+
+var postMessage = function (color, contents) {
+  console.log('Error: jQuery not ready yet');
+};
+
+$(function() {
+  $('#message-form').submit(function (event) {
+    event.preventDefault();
+    sendMessage($('#message').val());
+    $('#message').val('');
+  });
+
+  postMessage = function(color, contents) {
+    $('#messages').append('<li><span style="color: ' + color + '">' + 
+                          contents + '</span></li>');
+  };
+});
