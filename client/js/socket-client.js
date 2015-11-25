@@ -83,7 +83,7 @@ socket.on('NAME', function (data) {
   var user = data.user;
   var old = users[user.id];
   users[user.id] = user;
-  
+
   console.log(':NAME - <' + old.string + '> changed to <' + user.name + '>');
 
   postMessage(infoColor,
@@ -113,7 +113,7 @@ socket.on('ERROR', function (data) {
  */
 function getUserList() {
   return _.reduce(users,
-                  function (rest, user) { 
+                  function (rest, user) {
                     return (rest ? rest + ', ' : '') + user.name;
                   },
                   ''
