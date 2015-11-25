@@ -27,6 +27,9 @@ socket.on('STATE', function (data) {
   users = data.users;
   me = data.user;
   console.log(':STATE - Users in channel: ' + getUserList());
+
+  postMessage(infoColor, 'Hello! You name is ' + users[me].name + '. Currently,'
+              + ' these people are chatting: <br>' + getUserList());
 });
 
 /**
@@ -39,6 +42,8 @@ socket.on('JOINED', function (data) {
   var user = data.user;
   users[user.id] = user;
   console.log(':JOINED - ' + user.string);
+
+  postMessage(infoColor, user.name + ' just joined the channel!');
 });
 
 /**
@@ -51,6 +56,8 @@ socket.on('LEFT', function (data) {
   var user = data.user;
   console.log(':LEFT - ' + user.string);
   delete users[user.id];
+
+  postMessage(infoColor, user.name + ' just left :(');
 });
 
 /**
@@ -62,6 +69,8 @@ socket.on('LEFT', function (data) {
  */
 socket.on('MESG', function (data) {
   console.log(':MSG - <' + data.from + '> ' + data.message);
+
+  postMessage(messageColor, formatMessage(data.from, data.message));
 });
 
 /**
@@ -76,6 +85,9 @@ socket.on('NAME', function (data) {
   users[user.id] = user;
   
   console.log(':NAME - <' + old.string + '> changed to <' + user.name + '>');
+
+  postMessage(infoColor,
+              '<' + old.name + '> changed their name to <' + user.name + '>');
 });
 
 /**
@@ -85,6 +97,8 @@ socket.on('NAME', function (data) {
  */
 socket.on('ERROR', function (data) {
   console.log(':ERROR - ' + data.message);
+
+  postMessage(errorColor, 'ERROR: ' + data.message);
 });
 
 
