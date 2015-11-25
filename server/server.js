@@ -114,6 +114,24 @@ io.on('connection', (socket) => {
     }
   });
 
+  /**
+   * Sends an image (specified by a url) to
+   * all clients
+   * Data object contains:
+   *   - url
+   */
+  socket.on('IMG', (data) => {
+    let user = users[socket.id];
+    console.log(`:IMG - <${user.getName()}> IMAGE @ ${data.url}`);
+
+    let message = {
+      from: user.getName(),
+      message: `<img src="${data.url}" class="message-image">`
+    };
+
+    io.emit('MESG', message);
+  });
+
 
   /** Handles diconnect */
   socket.on('disconnect', () => {
