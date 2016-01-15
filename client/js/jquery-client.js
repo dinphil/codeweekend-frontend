@@ -14,8 +14,8 @@ var postMessage = function (color, contents) {
 
 $(function() {
   postMessage = function(color, contents) {
-    $('#messages').append('<li><span style="color: ' + color + '">' + 
-                          contents + '</span></li>');
+    $('<li><span style="color: ' + color + '">' 
+      + contents + '</span></li>').hide().appendTo('#messages').fadeIn(200);
   };
 
   $('#message-form').submit(function (event) {
