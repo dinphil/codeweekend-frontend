@@ -6,6 +6,8 @@
   "main": "server.js",
   "dependencies": {
     "mongodb": "^1.4.10",
+    "express": "^4.13.3",
+    "giphy-api": "^1.1.11",
     "moniker": "^0.1.2",
     "socket.io": "^1.3.7",
     "underscore": "^1.8.3"
