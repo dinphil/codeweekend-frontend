@@ -87,7 +87,7 @@ socket.on('NAME', function (data) {
   console.log(':NAME - <' + old.string + '> changed to <' + user.name + '>');
 
   postMessage(infoColor,
-              '<' + old.name + '> changed their name to <' + user.name + '>');
+              '&lt;' + old.name + '&gt; changed their name to &lt;' + user.name + '&gt;');
 });
 
 /**
@@ -124,7 +124,56 @@ function getUserList() {
  * Sends a MESG to the server
  */
 function sendMessage(message) {
-  socket.emit('MESG', {message: message});
+  // check if it's a command
+  if(message.substring(0,1) != '/') {
+    socket.emit('MESG', {message: message});
+  } else {
+    // it's a command!
+    let params = message.substring(1).split(' ');
+    let cmd = params[0];
+
+    sendCommand(cmd, params);
+  }
+}
+
+/**
+ * Handles commands
+ */
+function sendCommand(cmd, params) {
+  console.log('User attempted cmd ' + cmd);
+  console.log('Params: ' + params);
+
+  switch(cmd.toLowerCase()) {
+    case 'image':
+      sendImage(params[1]);
+      break;
+
+    case 'giphy':
+      params.shift();
+      var term = params.join(' ');
+      console.log('Giphy request of: ' + term);
+      $.ajax({
+        method: "GET",
+        url: "giphy/json/" + term,
+      }).done(function (result) {
+        if(result.data.image_url == undefined) {
+          postMessage(errorColor, 'ERROR: No results for giphy search of "'
+                      + term + '"');
+        } else {
+          sendImage(result.data.image_url);
+        }
+      });
+
+      break;
+
+    case 'setname':
+      setName(params[1]);
+      break;
+
+    default:
+      postMessage(errorColor, 'ERROR: Invalid command "' + cmd + '"');
+  }
+
 }
 
 /**
@@ -133,4 +182,11 @@ function sendMessage(message) {
  */
 function setName(newName) {
   socket.emit('NAME', {newName: newName});
+}
+
+/**
+ * Serves an image
+ */
+function sendImage(imgUrl) {
+  socket.emit('IMG', {url: imgUrl});
 }
