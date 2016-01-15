@@ -5,6 +5,7 @@
   "description": "A chat server built for Code Weekend Spring 2016",
   "main": "server.js",
   "dependencies": {
+    "mongodb": "^1.4.10",
     "express": "^4.13.3",
     "giphy-api": "^1.1.11",
     "moniker": "^0.1.2",

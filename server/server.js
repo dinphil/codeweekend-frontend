@@ -5,6 +5,8 @@ let Moniker = require('moniker');
 let _ = require('underscore');
 let User = require('./user');
 
+let mongo = require('mongodb').MongoClient;
+
 /* This sets up a pure socket-io server.
  * Later in the guide we upgrade to a full
  * express server
@@ -46,7 +48,8 @@ let server = app.listen(3000, () => {
 
 let io = require('socket.io')(server);
 
-
+// set access uri to the database
+let uri = "mongodb://dinphil:dinph1l@ds054298.mongolab.com:54298/chatsrvr"
 
 // stores the users
 // it's a dictionary where the userID is the key
@@ -66,6 +69,18 @@ io.on('connection', (socket) => {
     user: user.getId()
   });
 
+  /**
+   * Retrieves Chat history (last ten messages)
+   * whenever a client first accesses the page
+   */
+
+
+  mongo.connect(uri, function (err, db) {
+  var collection = db.collection('chatmsgs')
+  var stream = collection.find().sort({ _id : -1 }).limit(10).stream();
+  stream.on('data', (chat) => { io.emit('MESG', chat.content); });
+  });
+
   // emit the new JOIN for all the other users
   socket.broadcast.emit('JOINED', {user: users[socket.id].toObj()});
 
@@ -81,11 +96,29 @@ io.on('connection', (socket) => {
   socket.on('MESG', (data) => {
     let user = users[socket.id];
     console.log(`:MESG - <${user.getName()}> ${data.message}`);
-    
+
     let message = {
       from: user.getName(),
       message: data.message
     };
+
+
+    /**
+     * Sends message to database
+     * whenever a client messages
+     */
+
+    mongo.connect(uri, function (err, db) {
+        let collection = db.collection('chatmsgs');
+        collection.insert({
+        from: user.getName(),
+        message: data.message}, function(err, o) {
+            if (err) { console.warn(err.message); }
+           else { console.log("chat message inserted into db: " + message); }
+        });
+
+
+    });
 
     io.emit('MESG', message); // broadcast the message everywhere
   });
