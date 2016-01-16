@@ -39,9 +39,9 @@ io.on('connection', (socket) => {
 
 
   mongo.connect(uri, function (err, db) {
-  var collection = db.collection('chat messages')
+  var collection = db.collection('chatmsgs')
   var stream = collection.find().sort({ _id : -1 }).limit(10).stream();
-  stream.on('data', function (MESG) { io.emit('chat', chat.content); });
+  stream.on('data', (chat) => { io.emit('MESG', chat.content); });
   });
 
   // emit the new JOIN for all the other users
