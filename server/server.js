@@ -73,12 +73,14 @@ io.on('connection', (socket) => {
    * Retrieves Chat history (last ten messages)
    * whenever a client first accesses the page
    */
-
-
   mongo.connect(uri, function (err, db) {
-  var collection = db.collection('chatmsgs')
-  var stream = collection.find().sort({ _id : -1 }).limit(10).stream();
-  stream.on('data', (chat) => { io.emit('MESG', chat.content); });
+    var collection = db.collection('chatmsgs')
+    collection.find().sort({ date : -1 }).limit(10).toArray((err, array) => {
+      if(err) return console.error(err);
+      for(let i = array.length - 1; i >= 0; i--) {
+        socket.emit('MESG', array[i]);
+      }
+    });
   });
 
   // emit the new JOIN for all the other users
@@ -107,17 +109,15 @@ io.on('connection', (socket) => {
      * Sends message to database
      * whenever a client messages
      */
-
     mongo.connect(uri, function (err, db) {
         let collection = db.collection('chatmsgs');
         collection.insert({
-        from: user.getName(),
-        message: data.message}, function(err, o) {
-            if (err) { console.warn(err.message); }
-           else { console.log("chat message inserted into db: " + message); }
+          date: new Date().getTime(),
+          from: user.getName(),
+          message: data.message}, function(err, o) {
+              if (err) { console.warn(err.message); }
+              else { console.log("chat message inserted into db: " + message); }
         });
-
-
     });
 
     io.emit('MESG', message); // broadcast the message everywhere
