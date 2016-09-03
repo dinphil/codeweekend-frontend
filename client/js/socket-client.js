@@ -1,6 +1,6 @@
 'use strict';
 //var socket = io('http://localhost:3000'); // UNCOMMENT TO RUN LOCALLY
-var socket = io('http://codeweekend.complainr.co'); // RUNS LIVE VERSION
+var socket = io('http://codeweekend.hunterlightman.com'); // RUNS LIVE VERSION
 
 // stores user in channel. It's a dictionary with id as key
 // User objects have these fields
