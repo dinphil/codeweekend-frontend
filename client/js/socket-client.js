@@ -1,6 +1,5 @@
 'use strict';
-//var socket = io('http://localhost:3000'); // UNCOMMENT TO RUN LOCALLY
-var socket = io('http://codeweekend.hunterlightman.com'); // RUNS LIVE VERSION
+var socket = io('http://localhost:3000');
 
 // stores user in channel. It's a dictionary with id as key
 // User objects have these fields
@@ -102,6 +101,14 @@ socket.on('ERROR', function (data) {
   postMessage(errorColor, 'ERROR: ' + data.message);
 });
 
+socket.emit('PING');
+
+// ---------------------
+//    SOCKET HANDLERS
+// ---------------------
+socket.on('PONG', function (data) {
+  console.log('Got PONG!');
+});
 
 
 // ---------------
@@ -114,7 +121,7 @@ socket.on('ERROR', function (data) {
  */
 function getUserList() {
   return _.reduce(users,
-                  function (rest, user) {
+                  function (rest, user) { 
                     return (rest ? rest + ', ' : '') + user.name;
                   },
                   ''
@@ -145,32 +152,30 @@ function sendCommand(cmd, params) {
   console.log('Params: ' + params);
 
   switch(cmd.toLowerCase()) {
-    case 'image':
-      sendImage(params[1]);
-      break;
-
-    case 'giphy':
-      params.shift();
-      var term = params.join(' ');
-      console.log('Giphy request of: ' + term);
-      $.ajax({
-        method: "GET",
-        url: "giphy/json/" + term,
-      }).done(function (result) {
-        if(result.data.image_url == undefined) {
-          postMessage(errorColor, 'ERROR: No results for giphy search of "'
-                      + term + '"');
-        } else {
-          sendImage(result.data.image_url);
-        }
-      });
-
-      break;
-
     case 'setname':
       setName(params[1]);
       break;
+    case 'image':
+        sendImage(params[1]);
+        break;
+          
+    case 'giphy':
+        params.shift();
+        var term = params.join(' ');
+        console.log('Giphy request of: ' + term);
+        $.ajax({
+            method: "GET",
+            url: "giphy/json/" + term,
+        }).done(function (result) {
+        if(result.data.image_url == undefined) {
+        postMessage(errorColor, 'ERROR: No results for giphy search of "'
+                  + term + '"');
+        } else {
+            sendImage(result.data.image_url);
+        }
+  });
 
+  break;
     default:
       postMessage(errorColor, 'ERROR: Invalid command "' + cmd + '"');
   }

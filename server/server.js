@@ -5,16 +5,9 @@ let Moniker = require('moniker');
 let _ = require('underscore');
 let User = require('./user');
 
-let mongo = require('mongodb').MongoClient;
 
-/* This sets up a pure socket-io server.
- * Later in the guide we upgrade to a full
- * express server
-// sets up the server
-let Server = require('socket.io');
-let io = Server(3000); //construct a server on port 3000
-console.log('SocketIO listening on port 3000');
-*/
+let users = {};
+
 
 // sets up express
 let path = require('path');
@@ -25,6 +18,7 @@ app.use(express.static(path.join(__dirname, '../client')));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
+
 let routes = require('./routes');
 app.use('/', routes);
 
@@ -48,18 +42,12 @@ let server = app.listen(3000, () => {
 
 let io = require('socket.io')(server);
 
-// set access uri to the database
-let uri = "mongodb://dinphil:dinph1l@ds054298.mongolab.com:54298/chatsrvr"
-
-// stores the users
-// it's a dictionary where the userID is the key
-let users = {};
 
 // SOCKET HANDLER FUNCTIONS
-io.on('connection', (socket) => {
+io.on('connection', (socket) => { 
   // on 'connection' we need to set some stuff up
   let name = getUniqueName(); // get a unique name
-  let user = User(socket, name); // create a User (showcases factories)
+  let user = User(socket, name); // create a User (showcases the factory)
   users[socket.id] = user; // adds user to dictionary
   console.log(`:CONNECTION - ${user.toString()})`);
 
@@ -67,20 +55,6 @@ io.on('connection', (socket) => {
   socket.emit('STATE', {
     users: _.mapObject(users, (user) => user.toObj()), //_ for functional js
     user: user.getId()
-  });
-
-  /**
-   * Retrieves Chat history (last ten messages)
-   * whenever a client first accesses the page
-   */
-  mongo.connect(uri, function (err, db) {
-    var collection = db.collection('chatmsgs')
-    collection.find().sort({ date : -1 }).limit(10).toArray((err, array) => {
-      if(err) return console.error(err);
-      for(let i = array.length - 1; i >= 0; i--) {
-        socket.emit('MESG', array[i]);
-      }
-    });
   });
 
   // emit the new JOIN for all the other users
@@ -104,25 +78,9 @@ io.on('connection', (socket) => {
       message: data.message
     };
 
-
-    /**
-     * Sends message to database
-     * whenever a client messages
-     */
-    mongo.connect(uri, function (err, db) {
-        let collection = db.collection('chatmsgs');
-        collection.insert({
-          date: new Date().getTime(),
-          from: user.getName(),
-          message: data.message}, function(err, o) {
-              if (err) { console.warn(err.message); }
-              else { console.log("chat message inserted into db: " + message); }
-        });
-    });
-
     io.emit('MESG', message); // broadcast the message everywhere
   });
-
+    
   /**
    * Handles NAME
    * When a client tries to change their name
@@ -147,25 +105,24 @@ io.on('connection', (socket) => {
     }
   });
 
-  /**
-   * Sends an image (specified by a url) to
-   * all clients
-   * Data object contains:
-   *   - url
-   */
-  socket.on('IMG', (data) => {
-    let user = users[socket.id];
-    console.log(`:IMG - <${user.getName()}> IMAGE @ ${data.url}`);
+/**
+ * Sends an image (specified by a url) to
+ * all clients
+ * Data object contains:
+ *   - url
+ */
+socket.on('IMG', (data) => {
+  let user = users[socket.id];
+  console.log(`:IMG - <${user.getName()}> IMAGE @ ${data.url}`);
 
-    let message = {
-      from: user.getName(),
-      message: `<img src="${data.url}" class="message-image">`
-    };
+  let message = {
+    from: user.getName(),
+    message: `<img src="${data.url}" class="message-image">`
+  };
 
-    io.emit('MESG', message);
-  });
-
-
+  io.emit('MESG', message);
+});
+    
   /** Handles diconnect */
   socket.on('disconnect', () => {
     let user = users[socket.id];
@@ -174,7 +131,6 @@ io.on('connection', (socket) => {
     delete users[socket.id];
   });
 });
-
 
 
 // HELPER FUNCTIONS

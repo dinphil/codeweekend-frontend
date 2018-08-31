@@ -8,7 +8,7 @@ module.exports = function(socket, name) {
     setName(newName) {
       name = newName;
     },
-    
+
     getName() {
       return name;
     },
