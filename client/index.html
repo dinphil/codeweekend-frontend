@@ -1,9 +1,8 @@
-
 <!-- This is a slightly more complete HTML document, but with no styles as yet. -->
 <!-- This, by the way, is a comment that does not affect any of the code we write.
- We can use this to leave notes in the code for our future selves,
- or for others reading our code -->
-<!-- sample.html -->
+We can use this to leave notes in the code for our future selves,
+or for others reading our code -->
+<!-- index.html -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -11,6 +10,14 @@
         <meta name="description" content="Code Weekend Sample Page">
         <title>Code Weekend Sample Page</title>
         <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/script.js"></script>
+
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script src="js/jquery-client.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
+        <script src="http://underscorejs.org/underscore-min.js"></script>
+        <script src="js/socket-client.js"></script>
     </head>
     <body>
         <h1>Code Weekend Sample Page</h1>
@@ -21,26 +28,25 @@
         </p>
 
         <p>
-        Let's continue building our chat app. We'll first add a textarea element to input text, and apply some CSS properties to make it look pretty!
+            Let's continue building our chat app. We'll first add a textarea element to input text, and apply some CSS properties to make it look pretty!
         </p>
 
-    <ul id="messages"></ul>
-    <form id="message-form" action="#">
-    <textarea id="message" placeholder="Write your message here..." required></textarea>
-    <button type="submit">Send Message</button>
-    </form>
+        <form id="message-form" action="#">
+            <textarea id="message" placeholder="Write your message here..." required></textarea>
+        </form>
+        
+        <button id="submit-button" type="submit">Send Message</button>
+        <button id="clear-button">Clear!</button>
+        <button id="toggle-hide">Hide messages</button>
 
-    <h3> Messages </h3>
-    <p>
-        Here's a list of all the messages so far:
-    </p>
-      <ul class="messages">
-      </ul>
 
-    <script src="https://cdn.socket.io/socket.io-1.4.3.js"></script>
-    <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script src="http://underscorejs.org/underscore-min.js"></script>
-    <script src="js/jquery-client.js"></script>
-    <script src="js/socket-client.js"></script>
-  </body>
+        <h3> Messages </h3>
+        <p>
+            Here's a list of all the messages so far:
+        </p>
+        <ul id="messages">
+        </ul>
+
+        
+    </body>
 </html>

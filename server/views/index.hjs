@@ -1,0 +1,10 @@
+<html>
+  <head>
+    <title>Index</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    {{#notes}}
+    <li><a href='/{{ _id }}'>{{ title }}</a></li>
+  </body>
+</html>;
