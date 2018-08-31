@@ -1,8 +1,8 @@
-# CodeWeekend Spring 2016
+# CodeWeekend Fall 2018
 
 ## Chat App
 
-Source code for Penn’s Spring 2016 CodeWeekend.
+Source code for Penn’s Fall 2018 CodeWeekend.
 
 ## How to run
 
